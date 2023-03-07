@@ -14,18 +14,6 @@ class Engine
 
     protected mixed $partialsDir;
 
-    protected string $charset;
-
-    // /**
-    //  * @var bool|object
-    //  */
-    // private $loggerInterface;
-
-    // /**
-    //  * @var bool
-    //  */
-    // private $strictCallables;
-
     protected string $extension;
 
     public function __construct(array $options)
@@ -38,10 +26,7 @@ class Engine
         $this->cacheDir = $options['cacheDir'];
         $this->templatesDir = $options['templatesDir'] ?? false;
         $this->partialsDir = $options['partialsDir'] ?? null;
-        $this->charset = $options['charset'] ?? 'UTF-8';
-        // $this->loggerInterface = $options['loggerInterface'] ?? false;
-        // $this->strictCallables = $options['strictCallables'] ?? false;
-        $this->extension = $options['extension'] ?? '.brain';
+        $this->extension = $options['extension'] ?? 'brain';
         $this->escapeFlags = $options['escapeFlags'] ?? ENT_QUOTES;
         $this->escapeEncoding = $options['escapeEncoding'] ?? 'UTF-8';
         $this->escapeDoubleEncode = $options['escapeDoubleEncode'] ?? true;
@@ -171,7 +156,7 @@ class Engine
      */
     protected function resolveDots(string $name, ?string $prepend = null): string
     {
-        $path = str_replace('.', DIRECTORY_SEPARATOR, $name) . $this->extension;
+        $path = str_replace('.', DIRECTORY_SEPARATOR, $name) . '.' . $this->extension;
         if ($prepend) {
             $path = $prepend . DIRECTORY_SEPARATOR . $path;
         }
