@@ -1,0 +1,24 @@
+{
+    "name": "brainlight/brainlight-php",
+    "description": "Brainlight template engine for PHP.",
+    "keywords": ["templating", "brainlight", "PHP"],
+    "license": "MIT",
+    "homepage": "https://github.com/GiromettaMarco/brainlight-php",
+    "authors": [
+        {
+            "name": "Marco Girometta",
+            "email": "girometta.marco@gmail.com",
+            "homepage": "https://github.com/GiromettaMarco"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brainlight\\BrainlightPhp\\": "src/BrainlightPhp/"
+        }
+    },
+    "minimum-stability": "dev"
+    
+}
