@@ -44,7 +44,7 @@ trait HasCompiler
         $patterns = [
             '/{{\s*#\s*([a-zA-Z0-9_]+)\s*}}/', // For
             '/{{\s*#\s*([a-zA-Z0-9_]+)\s+as\s+([a-zA-Z0-9_]+)\s*}}/', // Foreach
-            '/{{\s*\/#\s*}}/', // Close statement 
+            '/{{\s*\/#\s*}}/', // Close statement
         ];
 
         $replcaements = [
@@ -73,12 +73,11 @@ trait HasCompiler
 
     protected function compileInclusions(string $content): string
     {
-        return preg_replace_callback('/{{\s*>\s*([a-zA-Z0-9_\-.]+)\s*(.*?)\s*}}/', function ($matches) {
+        return preg_replace_callback('/{{\s*>\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}/', function ($matches) {
 
-            $variableMatches = [];
-            preg_match_all('/([^\n\r\s]+?)="(.+?)"/', $matches[2], $variableMatches, PREG_SET_ORDER);
+            $variableMatches = $this->collectAssignements($matches[2]);
 
-            $data = $this->compileAssignment($variableMatches);
+            $data = $this->compileAssignments($variableMatches);
 
             return '<?php echo $__brain->include(\'' . $matches[1] . '\', ' . $data . ') ?>';
 
@@ -102,14 +101,13 @@ trait HasCompiler
 
     protected function compileExtension(string $content): string
     {
-        return preg_replace_callback('/{{\s*&\s*([a-zA-Z0-9_\-.]+)\s*(.*?)\s*}}(\r\n|\r|\n)?/', function ($matches) {
+        return preg_replace_callback('/{{\s*&\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}(\r\n|\r|\n)?/', function ($matches) {
 
-            $variableMatches = [];
-            preg_match_all('/([^\n\r\s]+?)="(.+?)"/', $matches[2], $variableMatches, PREG_SET_ORDER);
+            $variableMatches = $this->collectAssignements($matches[2]);
 
             $this->extending = [
                 'template' => $matches[1],
-                'data' => $this->compileAssignment($variableMatches),
+                'data' => $this->compileAssignments($variableMatches),
             ];
 
             return '';
@@ -117,7 +115,14 @@ trait HasCompiler
         }, $content);
     }
 
-    protected function compileAssignment(array $matches): string
+    protected function collectAssignements(string $haystack): array
+    {
+        $matches = [];
+        preg_match_all('/(:?[a-zA-Z0-9_]+?)="(.+?)"/', $haystack, $matches, PREG_SET_ORDER);
+        return $matches;
+    }
+
+    protected function compileAssignments(array $matches): string
     {
         $data = '[';
 
