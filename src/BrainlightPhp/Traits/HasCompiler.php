@@ -49,7 +49,7 @@ trait HasCompiler
 
         $replcaements = [
             '<?php for ($index = 0; $index < \$$1; $index++) { ?>',
-            '<?php foreach(\$$1 as \$$2) { ?>',
+            '<?php foreach(\$$1 as $index => \$$2) { ?>',
             '<?php } ?>',
         ];
 
