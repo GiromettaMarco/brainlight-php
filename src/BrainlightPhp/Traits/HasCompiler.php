@@ -75,9 +75,7 @@ trait HasCompiler
     {
         return preg_replace_callback('/{{\s*>\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}/', function ($matches) {
 
-            $variableMatches = $this->collectAssignements($matches[2]);
-
-            $data = $this->compileAssignments($variableMatches);
+            $data = $this->compileAssignments($matches[2]);
 
             return '<?php echo $__brain->include(\'' . $matches[1] . '\', ' . $data . ') ?>';
 
@@ -103,11 +101,9 @@ trait HasCompiler
     {
         return preg_replace_callback('/{{\s*&\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}(\r\n|\r|\n)?/', function ($matches) {
 
-            $variableMatches = $this->collectAssignements($matches[2]);
-
             $this->extending = [
                 'template' => $matches[1],
-                'data' => $this->compileAssignments($variableMatches),
+                'data' => $this->compileAssignments($matches[2]),
             ];
 
             return '';
@@ -115,22 +111,32 @@ trait HasCompiler
         }, $content);
     }
 
-    protected function collectAssignements(string $haystack): array
+    protected function compileAssignments(string $haystack): string
     {
         $matches = [];
-        preg_match_all('/(:?[a-zA-Z0-9_]+?)="(.+?)"/', $haystack, $matches, PREG_SET_ORDER);
-        return $matches;
-    }
+        preg_match_all('/\S+/', $haystack, $matches);
 
-    protected function compileAssignments(array $matches): string
-    {
         $data = '[';
 
-        foreach ($matches as $match) {
-            if (substr($match[1], 0, 1) === ':') {
-                $data .= '\'' . substr_replace($match[1], '', 0, 1) . '\' => $' . $match[2] . ', ';
-            } else {
-                $data .= '\'' . $match[1] . '\' => \'' . addslashes($match[2]) . '\', ';
+        foreach ($matches[0] as $assignement) {
+
+            $assMatches = [];
+
+            if (preg_match('/(:?[a-zA-Z0-9_]+?)="(.+?)"/', $assignement, $assMatches)) {
+                // Expanded syntax
+
+                if (substr($assMatches[1], 0, 1) === ':') {
+                    // Assign variable
+                    $data .= '\'' . substr_replace($assMatches[1], '', 0, 1) . '\' => $' . $assMatches[2] . ', ';
+                } else {
+                    // Assign string
+                    $data .= '\'' . $assMatches[1] . '\' => \'' . addslashes($assMatches[2]) . '\', ';
+                }
+
+            } elseif (substr($assignement, 0, 1) === ':') {
+                // Short-hand syntax
+                $varName = substr_replace($assignement, '', 0, 1);
+                $data .= '\'' . $varName . '\' => $' . $varName . ', ';
             }
         }
 
