@@ -142,7 +142,7 @@ trait HasCompiler
     protected function getExtension(): string
     {
         if (isset($this->extending)) {
-            $extention = PHP_EOL . '<?php echo $__brain->include(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+            $extention = '<?php echo $__brain->include(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
             $this->extending = null;
         }
 
@@ -151,6 +151,6 @@ trait HasCompiler
 
     protected function getSource($filename): string
     {
-        return PHP_EOL . "<?php /**SOURCE $filename **/ ?>";
+        return "<?php /**SOURCE $filename **/ ?>";
     }
 }
