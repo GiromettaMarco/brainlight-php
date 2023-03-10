@@ -8,7 +8,8 @@ class Engine
 {
     use Traits\HasCache,
     Traits\HasCompiler,
-    Traits\HasInterpreter;
+    Traits\HasInterpreter,
+    Traits\HasLogic;
 
     protected mixed $templatesDir;
 
@@ -26,6 +27,7 @@ class Engine
         $this->cacheDir = $options['cacheDir'];
         $this->templatesDir = $options['templatesDir'] ?? false;
         $this->partialsDir = $options['partialsDir'] ?? null;
+        $this->logicNamespace = $options['logicNamespace'] ?? false;
         $this->extension = $options['extension'] ?? 'brain';
         $this->escapeFlags = $options['escapeFlags'] ?? ENT_QUOTES;
         $this->escapeEncoding = $options['escapeEncoding'] ?? 'UTF-8';
@@ -58,6 +60,13 @@ class Engine
         $templatePath = $this->resolveTemplateName($template, true);
 
         return $this->renderTemplate($templatePath, array_merge($variables, $this->slots));
+    }
+
+    public function includeWithLogic(string $template, array $variables = []): string
+    {
+        $logic = new ($this->resolveLogicNamespace($template))($template);
+
+        return $this->include($logic->template, $logic->filterVariables($variables));
     }
 
     /**

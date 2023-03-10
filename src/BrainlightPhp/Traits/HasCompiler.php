@@ -10,7 +10,9 @@ trait HasCompiler
     {
         $content = $this->compileSlots(file_get_contents($filename));
         $content = $this->compileExtension($content);
+        $content = $this->compileAdvancedExtension($content);
         $content = $this->compileInclusions($content);
+        $content = $this->compileAdvancedInclusions($content);
         $content = $this->compileConditions($content);
         $content = $this->compileLoops($content);
         $content = $this->compileVariables($content);
@@ -82,6 +84,17 @@ trait HasCompiler
         }, $content);
     }
 
+    protected function compileAdvancedInclusions(string $content): string
+    {
+        return preg_replace_callback('/{{\s*>\+\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}/', function ($matches) {
+
+            $data = $this->compileAssignments($matches[2]);
+
+            return '<?php echo $__brain->includeWithLogic(\'' . $matches[1] . '\', ' . $data . ') ?>';
+
+        }, $content);
+    }
+
     protected function compileSlots(string $content): string
     {
         $patterns = [
@@ -104,6 +117,22 @@ trait HasCompiler
             $this->extending = [
                 'template' => $matches[1],
                 'data' => $this->compileAssignments($matches[2]),
+                'advanced' => false,
+            ];
+
+            return '';
+
+        }, $content);
+    }
+
+    protected function compileAdvancedExtension(string $content): string
+    {
+        return preg_replace_callback('/{{\s*&\+\s*([a-zA-Z0-9_\-.]+)\s*([\S\s]*?)\s*}}(\r\n|\r|\n)?/', function ($matches) {
+
+            $this->extending = [
+                'template' => $matches[1],
+                'data' => $this->compileAssignments($matches[2]),
+                'advanced' => true,
             ];
 
             return '';
@@ -148,7 +177,13 @@ trait HasCompiler
     protected function getExtension(): string
     {
         if (isset($this->extending)) {
-            $extention = '<?php echo $__brain->include(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+
+            if ($this->extending['advanced']) {
+                $extention = '<?php echo $__brain->includeWithLogic(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+            } else {
+                $extention = '<?php echo $__brain->include(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+            }
+
             $this->extending = null;
         }
 
