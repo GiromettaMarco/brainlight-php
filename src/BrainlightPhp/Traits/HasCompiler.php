@@ -25,9 +25,9 @@ trait HasCompiler
     protected function compileVariables(string $content): string
     {
         $patterns = [
-            '/{{\s*!\s*([a-zA-Z0-9_]+)\s*->\s*([a-zA-Z0-9_]+)\s*}}/', // Unescaped variable with context
+            '/{{\s*!\s*([a-zA-Z0-9_]+)\s*>\s*([a-zA-Z0-9_]+)\s*}}/', // Unescaped variable with context
             '/{{\s*!\s*([a-zA-Z0-9_]+)\s*}}/', // Unescaped variable
-            '/{{\s*([a-zA-Z0-9_]+)\s*->\s*([a-zA-Z0-9_]+)\s*}}/', // Escaped variable with context
+            '/{{\s*([a-zA-Z0-9_]+)\s*>\s*([a-zA-Z0-9_]+)\s*}}/', // Escaped variable with context
             '/{{\s*([a-zA-Z0-9_]+)\s*}}/', // Escaped variable
         ];
 
@@ -45,13 +45,15 @@ trait HasCompiler
     {
         $patterns = [
             '/{{\s*#\s*([a-zA-Z0-9_]+)\s*}}/', // For
-            '/{{\s*#\s*([a-zA-Z0-9_]+)\s+as\s+([a-zA-Z0-9_]+)\s*}}/', // Foreach
+            '/{{\s*#\s*([a-zA-Z0-9_]+)\s+as\s+([a-zA-Z0-9_]+)\s*}}/', // Foreach (with value)
+            '/{{\s*#\s*([a-zA-Z0-9_]+)\s+as\s+([a-zA-Z0-9_]+)\s*=>\s*([a-zA-Z0-9_]+)\s*}}/', // Foreach (with key => value)
             '/{{\s*\/#\s*}}/', // Close statement
         ];
 
         $replcaements = [
             '<?php for ($index = 0; $index < \$$1; $index++) { ?>',
-            '<?php foreach(\$$1 as $index => \$$2) { ?>',
+            '<?php foreach(\$$1 as \$$2) { ?>',
+            '<?php foreach(\$$1 as \$$2 => \$$3) { ?>',
             '<?php } ?>',
         ];
 

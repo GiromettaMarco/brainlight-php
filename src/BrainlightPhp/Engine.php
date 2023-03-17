@@ -62,6 +62,13 @@ class Engine
         return $this->renderTemplate($templatePath, array_merge($variables, $this->slots));
     }
 
+    /**
+     * Renders a partial template with additional logic.
+     *
+     * @param string $template
+     * @param array $variables
+     * @return string
+     */
     public function includeWithLogic(string $template, array $variables = []): string
     {
         $logic = new ($this->resolveLogicNamespace($template))($template);
