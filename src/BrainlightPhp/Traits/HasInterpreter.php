@@ -18,6 +18,13 @@ trait HasInterpreter
     protected array $slotNames = [];
 
     /**
+     * Current depth level for slots.
+     *
+     * @var int
+     */
+    protected int $slotsLevel = 0;
+
+    /**
      * Associative array with slots names and their values.
      *
      * @var array
@@ -34,7 +41,9 @@ trait HasInterpreter
     protected function evaluateTemplate(string $filename, array $data = []): string
     {
         ob_start();
+        $this->slotsLevel++;
         $this->evaluate($filename, $data);
+        $this->slotsLevel--;
         return ob_get_clean();
     }
 
@@ -74,7 +83,27 @@ trait HasInterpreter
     public function stopSlot()
     {
         $slotName = array_pop($this->slotNames);
-        $this->slots[$slotName] = ob_get_clean();
+        $this->slots[$slotName] = [
+            'level' => $this->slotsLevel,
+            'content' => ob_get_clean(),
+        ];
+    }
+
+    /**
+     * Recovers slots for the current level and remove them from the slot array.
+     *
+     * @return array
+     */
+    public function getSlots(): array
+    {
+        $collectedSlots = [];
+        foreach ($this->slots as $slotName => $slot) {
+            if ($slot['level'] === $this->slotsLevel) {
+                $collectedSlots[$slotName] = $slot['content'];
+                unset($this->slots[$slotName]);
+            }
+        }
+        return $collectedSlots;
     }
 
     /**

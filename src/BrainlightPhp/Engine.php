@@ -59,7 +59,35 @@ class Engine
     {
         $templatePath = $this->resolveTemplateName($template, true);
 
-        return $this->renderTemplate($templatePath, array_merge($variables, $this->slots));
+        return $this->renderTemplate($templatePath, $variables);
+    }
+
+    /**
+     * Renders a partial template by name.
+     *
+     * @param string $template
+     * @param array $variables
+     * @return string
+     */
+    public function includePartial(string $template, array $variables = []): string
+    {
+        $templatePath = $this->resolveTemplateName($template, true);
+
+        return $this->renderTemplate($templatePath, $variables);
+    }
+
+    /**
+     * Renders a template extension by name.
+     *
+     * @param string $template
+     * @param array $variables
+     * @return string
+     */
+    public function includeExtension(string $template, array $variables = []): string
+    {
+        $templatePath = $this->resolveTemplateName($template, true);
+
+        return $this->renderTemplate($templatePath, array_merge($variables, $this->getSlots()));
     }
 
     /**
@@ -69,11 +97,25 @@ class Engine
      * @param array $variables
      * @return string
      */
-    public function includeWithLogic(string $template, array $variables = []): string
+    public function includePartialWithLogic(string $template, array $variables = []): string
     {
         $logic = new ($this->resolveLogicNamespace($template))($template);
 
-        return $this->include($logic->template, $logic->filterVariables($variables));
+        return $this->includePartial($logic->template, $logic->filterVariables($variables));
+    }
+
+    /**
+     * Renders a template extension with additional logic.
+     *
+     * @param string $template
+     * @param array $variables
+     * @return string
+     */
+    public function includeExtensionWithLogic(string $template, array $variables = []): string
+    {
+        $logic = new ($this->resolveLogicNamespace($template))($template);
+
+        return $this->includeExtension($logic->template, $logic->filterVariables($variables));
     }
 
     /**

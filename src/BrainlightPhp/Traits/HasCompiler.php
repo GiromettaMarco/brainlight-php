@@ -81,7 +81,7 @@ trait HasCompiler
 
             $data = $this->compileAssignments($matches[2]);
 
-            return '<?php echo $__brain->include(\'' . $matches[1] . '\', ' . $data . ') ?>';
+            return '<?php echo $__brain->includePartial(\'' . $matches[1] . '\', ' . $data . ') ?>';
 
         }, $content);
     }
@@ -92,7 +92,7 @@ trait HasCompiler
 
             $data = $this->compileAssignments($matches[2]);
 
-            return '<?php echo $__brain->includeWithLogic(\'' . $matches[1] . '\', ' . $data . ') ?>';
+            return '<?php echo $__brain->includePartialWithLogic(\'' . $matches[1] . '\', ' . $data . ') ?>';
 
         }, $content);
     }
@@ -181,9 +181,9 @@ trait HasCompiler
         if (isset($this->extending)) {
 
             if ($this->extending['advanced']) {
-                $extention = '<?php echo $__brain->includeWithLogic(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+                $extention = '<?php echo $__brain->includeExtensionWithLogic(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
             } else {
-                $extention = '<?php echo $__brain->include(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
+                $extention = '<?php echo $__brain->includeExtension(\'' . $this->extending['template'] . '\', ' . $this->extending['data'] . ') ?>';
             }
 
             $this->extending = null;
