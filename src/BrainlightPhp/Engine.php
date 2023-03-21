@@ -2,7 +2,7 @@
 
 namespace Brainlight\BrainlightPhp;
 
-use Brainlight\BrainlightPhp\CacheId;
+use Brainlight\BrainlightPhp\Types\CacheId;
 
 class Engine
 {
@@ -44,20 +44,6 @@ class Engine
     public function render(string $template, array $variables = []): string
     {
         $templatePath = $this->resolveTemplateName($template);
-
-        return $this->renderTemplate($templatePath, $variables);
-    }
-
-    /**
-     * Renders a partial template by name.
-     *
-     * @param string $template
-     * @param array $variables
-     * @return string
-     */
-    public function include(string $template, array $variables = []): string
-    {
-        $templatePath = $this->resolveTemplateName($template, true);
 
         return $this->renderTemplate($templatePath, $variables);
     }

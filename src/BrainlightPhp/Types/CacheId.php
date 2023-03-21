@@ -1,6 +1,6 @@
 <?php
 
-namespace Brainlight\BrainlightPhp;
+namespace Brainlight\BrainlightPhp\Types;
 
 class CacheId
 {

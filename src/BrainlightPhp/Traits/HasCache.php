@@ -2,7 +2,7 @@
 
 namespace Brainlight\BrainlightPhp\Traits;
 
-use Brainlight\BrainlightPhp\CacheId;
+use Brainlight\BrainlightPhp\Types\CacheId;
 
 trait HasCache
 {
