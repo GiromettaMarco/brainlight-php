@@ -31,8 +31,7 @@ class Assignments
             $this->compileShorthand($token, $last) ||
             $this->compileVariable($token, $last) ||
             $this->compileString($token, $last) ||
-            $this->compileBoolAndInt($token, $last) ||
-            $this->compileContext($token, $last)
+            $this->compileBoolAndInt($token, $last)
         ) {
             return true;
         }
@@ -57,9 +56,9 @@ class Assignments
 
     protected function compileVariable(string $token, bool $last = false): bool
     {
-        if (preg_match('/^:([a-zA-Z0-9_]+)=([a-zA-Z0-9_]+)$/', $token, $matches)) {
+        if (preg_match('/^:([a-zA-Z0-9_]+)=(.+)$/', $token, $matches)) {
 
-            $this->compiled .= "'$matches[1]' => \$$matches[2]";
+            $this->compiled .= "'$matches[1]' => " . Context::compile($matches[2]);
 
             if ( ! $last) {
                 $this->compiled .= ', ';
@@ -92,22 +91,6 @@ class Assignments
         if (preg_match('/^([a-zA-Z0-9_]+)=([0-9]*|true|false)$/', $token, $matches)) {
 
             $this->compiled .= "'$matches[1]' => $matches[2]";
-
-            if ( ! $last) {
-                $this->compiled .= ', ';
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function compileContext(string $token, bool $last = false): bool
-    {
-        if (preg_match('/^:([a-zA-Z0-9_]+)=([a-zA-Z0-9_]+)>([a-zA-Z0-9_]+)$/', $token, $matches)) {
-
-            $this->compiled .= "'$matches[1]' => is_array(\$$matches[2]) ? \$$matches[2]['$matches[3]'] : \$$matches[2]->$matches[3]";
 
             if ( ! $last) {
                 $this->compiled .= ', ';

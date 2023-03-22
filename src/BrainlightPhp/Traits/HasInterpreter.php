@@ -116,4 +116,33 @@ trait HasInterpreter
     {
         return htmlspecialchars($string, $this->escapeFlags, $this->escapeEncoding, $this->escapeDoubleEncode);
     }
+
+    public function contextualize(mixed $context, array $chain = [], bool $isset = false): mixed
+    {
+        if ($chain) {
+
+            if (is_array($context)) {
+
+                if ($isset && ! isset($context[$chain[0]])) {
+                    return false;
+                }
+
+                return $this->contextualize($context[$chain[0]], array_splice($chain, 1), $isset);
+            }
+
+            if (is_object($context)) {
+
+                if ($isset && ! isset($context->{$chain[0]})) {
+                    return false;
+                }
+
+                return $this->contextualize($context->{$chain[0]}, array_splice($chain, 1), $isset);
+            }
+
+            // @todo type runtime exception here
+            return false;
+        }
+
+        return $context;
+    }
 }
