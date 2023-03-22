@@ -25,6 +25,6 @@ class Extension
             $code .= 'includeExtension';
         }
 
-        return $code .= '(\'' . $this->template . '\', ' . $this->data . ') ?>';
+        return $code .= "('" . $this->template . "', " . $this->data . "); ?>";
     }
 }
