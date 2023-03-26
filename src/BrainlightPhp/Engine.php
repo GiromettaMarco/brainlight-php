@@ -7,9 +7,10 @@ use Brainlight\BrainlightPhp\Types\CacheId;
 class Engine
 {
     use Traits\HasCache,
-    Traits\HasCompiler,
-    Traits\HasInterpreter,
-    Traits\HasLogic;
+        Traits\HasCompiler,
+        Traits\HasInterpreter,
+        Traits\HasLogic,
+        Traits\HasSlots;
 
     protected mixed $templatesDir;
 
@@ -32,6 +33,9 @@ class Engine
         $this->escapeFlags = $options['escapeFlags'] ?? ENT_QUOTES;
         $this->escapeEncoding = $options['escapeEncoding'] ?? 'UTF-8';
         $this->escapeDoubleEncode = $options['escapeDoubleEncode'] ?? true;
+
+        // Initialize
+        $this->slots = new Types\SlotsMap();
     }
 
     /**
@@ -73,7 +77,7 @@ class Engine
     {
         $templatePath = $this->resolveTemplateName($template, true);
 
-        return $this->renderTemplate($templatePath, array_merge($variables, $this->getSlots()));
+        return $this->renderTemplate($templatePath, array_merge($variables, $this->slots->pop()));
     }
 
     /**

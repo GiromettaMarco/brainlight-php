@@ -4,32 +4,13 @@ namespace Brainlight\BrainlightPhp\Traits;
 
 trait HasInterpreter
 {
+    use HasSlots;
+
     protected int $escapeFlags;
 
     protected ?string $escapeEncoding;
 
     protected bool $escapeDoubleEncode;
-
-    /**
-     * Stack of slot names provided at runtime.
-     * 
-     * @var array
-     */
-    protected array $slotNames = [];
-
-    /**
-     * Current depth level for slots.
-     *
-     * @var int
-     */
-    protected int $slotsLevel = 0;
-
-    /**
-     * Associative array with slots names and their values.
-     *
-     * @var array
-     */
-    protected array $slots = [];
 
     /**
      * Evaluates a cached template and returns its output.
@@ -41,9 +22,9 @@ trait HasInterpreter
     protected function evaluateTemplate(string $filename, array $data = []): string
     {
         ob_start();
-        $this->slotsLevel++;
+        $this->slots->increaseLevel();
         $this->evaluate($filename, $data);
-        $this->slotsLevel--;
+        $this->slots->decreaseLevel();
         return ob_get_clean();
     }
 
@@ -67,46 +48,6 @@ trait HasInterpreter
     }
 
     /**
-     * Starts a slot directive.
-     *
-     * @param string $slotName
-     */
-    public function startSlot(string $slotName)
-    {
-        $this->slotNames[] = $slotName;
-        ob_start();
-    }
-
-    /**
-     * Stops a slot directive.
-     */
-    public function stopSlot()
-    {
-        $slotName = array_pop($this->slotNames);
-        $this->slots[$slotName] = [
-            'level' => $this->slotsLevel,
-            'content' => ob_get_clean(),
-        ];
-    }
-
-    /**
-     * Recovers slots for the current level and remove them from the slot array.
-     *
-     * @return array
-     */
-    public function getSlots(): array
-    {
-        $collectedSlots = [];
-        foreach ($this->slots as $slotName => $slot) {
-            if ($slot['level'] === $this->slotsLevel) {
-                $collectedSlots[$slotName] = $slot['content'];
-                unset($this->slots[$slotName]);
-            }
-        }
-        return $collectedSlots;
-    }
-
-    /**
      * Escapes a string.
      *
      * @param string $string
@@ -127,7 +68,7 @@ trait HasInterpreter
                     return false;
                 }
 
-                return $this->contextualize($context[$chain[0]], array_splice($chain, 1), $isset);
+                return $this->contextualize($context[$chain[0]], array_slice($chain, 1), $isset);
             }
 
             if (is_object($context)) {
@@ -136,7 +77,7 @@ trait HasInterpreter
                     return false;
                 }
 
-                return $this->contextualize($context->{$chain[0]}, array_splice($chain, 1), $isset);
+                return $this->contextualize($context->{$chain[0]}, array_slice($chain, 1), $isset);
             }
 
             // @todo type runtime exception here
