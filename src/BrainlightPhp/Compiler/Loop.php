@@ -17,7 +17,8 @@ class Loop
             return static::for(Context::compile($matches[1]));
         }
 
-        throw new \Exception("Template syntax error. Tag: {{#}}. Statement: '$statement'");
+        trigger_error("Template syntax error; Tag: {{#}}; Statement: '$statement'", E_USER_WARNING);
+        return '';
     }
 
     public static function close(): string

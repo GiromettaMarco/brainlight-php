@@ -58,7 +58,14 @@ class Assignments
     {
         if (preg_match('/^:([a-zA-Z0-9_]+)=(.+)$/', $token, $matches)) {
 
-            $this->compiled .= "'$matches[1]' => " . Context::compile($matches[2]);
+            $context = Context::compile($matches[2]);
+
+            if ($context === '') {
+                trigger_error("Template syntax error. Invalide assignment: '$token'", E_USER_WARNING);
+                return false;
+            }
+
+            $this->compiled .= "'$matches[1]' => " . $context;
 
             if ( ! $last) {
                 $this->compiled .= ', ';

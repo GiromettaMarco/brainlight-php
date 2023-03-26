@@ -14,18 +14,19 @@ class Inclusion
 
             $data = (isset($matches[3])) ? Assignments::compile($matches[3]) : '[]';
 
-            $code = '<?php echo $__brain->';
+            $compiled = '<?php echo $__brain->';
 
             if ($matches[1] !== '') {
-                $code .= 'includePartialWithLogic';
+                $compiled .= 'includePartialWithLogic';
             } else {
-                $code .= 'includePartial';
+                $compiled .= 'includePartial';
             }
 
-            return $code .= '(\'' . $matches[2] . '\', ' . $data . '); ?>';
+            return $compiled .= '(\'' . $matches[2] . '\', ' . $data . '); ?>';
         }
 
-        throw new \Exception("Template syntax error. Tag: {{>}}. Statement: '$statement'");
+        trigger_error("Template syntax error; Tag: {{>}}; Statement: '$statement'", E_USER_WARNING);
+        return '';
     }
 
     public static function getExtension(string $statement): Extension
@@ -34,6 +35,7 @@ class Inclusion
             return new Extension($matches[2], Assignments::compile($matches[3] ?? ''), $matches[1]);
         }
 
-        throw new \Exception("Template syntax error. Tag: {{&}}. Statement: '$statement'");
+        trigger_error("Template syntax error; Tag: {{&}}; Statement: '$statement'", E_USER_WARNING);
+        return null;
     }
 }
