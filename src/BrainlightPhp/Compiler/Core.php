@@ -16,7 +16,7 @@ class Core
     {
         $this->filename = $filename;
 
-        $this->tokens = preg_split('/({{)\s*(.*?)\s*(}})/', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $this->tokens = preg_split('/({{)\s*([\S\s]*?)\s*(}})/', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $this->compileTokens();
 
         $this->appendExtension();
