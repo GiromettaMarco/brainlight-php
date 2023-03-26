@@ -8,7 +8,7 @@ class Context
 
     public string $compiled = '';
     public string $variable = '';
-    public string $chain = '';
+    public string $chain = '[]';
     protected bool $isset;
 
     public function __construct(string $statement, bool $isset = false)
