@@ -47,6 +47,21 @@ trait HasInterpreter
         })();
     }
 
+    public function print(string|bool $string, bool $escape = true): string
+    {
+        if ($string === true) {
+            return 'true';
+        } else if ($string === false) {
+            return 'false';
+        }
+
+        if ($escape) {
+            return $this->escape($string);
+        }
+
+        return $string;
+    }
+
     /**
      * Escapes a string.
      *

@@ -27,20 +27,16 @@ class Variable
 
     protected function start(): void
     {
-        $this->compiled .= '<?php echo ';
-
-        if ($this->escape) {
-            $this->compiled .= '$__brain->escape(';
-        }
+        $this->compiled .= '<?php echo $__brain->print(';
     }
 
     protected function stop(): void
     {
-        if ($this->escape) {
-            $this->compiled .= ')';
+        if ( ! $this->escape) {
+            $this->compiled .= ', false';
         }
 
-        $this->compiled .= '; ?>';
+        $this->compiled .= '); ?>';
     }
 
     public static function compile(string $statement, bool $escape = true): string
