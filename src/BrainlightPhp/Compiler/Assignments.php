@@ -31,7 +31,7 @@ class Assignments
             $this->compileShorthand($token, $last) ||
             $this->compileVariable($token, $last) ||
             $this->compileString($token, $last) ||
-            $this->compileBoolAndInt($token, $last)
+            $this->compileBoolAndNumb($token, $last)
         ) {
             return true;
         }
@@ -93,9 +93,9 @@ class Assignments
         return false;
     }
 
-    protected function compileBoolAndInt(string $token, bool $last = false): bool
+    protected function compileBoolAndNumb(string $token, bool $last = false): bool
     {
-        if (preg_match('/^([a-zA-Z0-9_]+)=([0-9]*|true|false)$/', $token, $matches)) {
+        if (preg_match('/^([a-zA-Z0-9_]+)=([0-9.]*|true|false)$/', $token, $matches)) {
 
             $this->compiled .= "'$matches[1]' => $matches[2]";
 
