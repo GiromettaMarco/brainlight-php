@@ -1,6 +1,6 @@
 <?php
 
-namespace Brainlight\BrainlightPhp\Compiler;
+namespace Brainlight\BrainlightPhp\Compilers;
 
 use Brainlight\BrainlightPhp\Types\Extension;
 

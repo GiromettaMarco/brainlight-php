@@ -2,8 +2,6 @@
 
 namespace Brainlight\BrainlightPhp\Types;
 
-use Brainlight\BrainlightPhp\Types\Slot;
-
 class SlotsMap
 {
     public array $slots;

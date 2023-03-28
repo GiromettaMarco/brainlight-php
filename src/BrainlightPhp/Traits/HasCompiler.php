@@ -2,7 +2,7 @@
 
 namespace Brainlight\BrainlightPhp\Traits;
 
-use Brainlight\BrainlightPhp\Compiler\Core;
+use Brainlight\BrainlightPhp\Compilers\Core;
 
 trait HasCompiler
 {
