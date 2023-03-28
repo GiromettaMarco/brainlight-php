@@ -1,14 +1,15 @@
 <?php
 
-namespace Brainlight\BrainlightPhp\Compilers;
+namespace Brainlight\BrainlightPhp\Compilers\Tags;
 
-use Brainlight\BrainlightPhp\Types\Extension;
+use Brainlight\BrainlightPhp\Compilers\Assignments,
+    Brainlight\BrainlightPhp\Types\Extension;
 
-class Inclusion
+class Inclusion extends SingleTag
 {
     protected static string $regex = '/^(\+?)\s*([a-zA-Z0-9_\-.]+)(?:\s+([\S\s]*))?$/';
 
-    public static function partial(string $statement): string
+    public static function compile(string $statement): string
     {
         if (preg_match(static::$regex, $statement, $matches)) {
 

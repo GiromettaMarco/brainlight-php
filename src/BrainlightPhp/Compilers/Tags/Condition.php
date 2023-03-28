@@ -1,8 +1,10 @@
 <?php
 
-namespace Brainlight\BrainlightPhp\Compilers;
+namespace Brainlight\BrainlightPhp\Compilers\Tags;
 
-class Condition
+use Brainlight\BrainlightPhp\Compilers\Context;
+
+class Condition extends BlockTag
 {
     public static function open(string $statement): string
     {

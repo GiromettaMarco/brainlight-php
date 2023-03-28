@@ -28,84 +28,13 @@ class Assignments
     protected function compileToken(string $token, bool $last = false): bool
     {
         if (
-            $this->compileShorthand($token, $last) ||
-            $this->compileVariable($token, $last) ||
-            $this->compileString($token, $last) ||
-            $this->compileBoolAndNumb($token, $last)
+            Assignments\Shorthand::compile($token, $last, $this->compiled) ||
+            Assignments\Variable::compile($token, $last, $this->compiled) ||
+            Assignments\Text::compile($token, $last, $this->compiled) ||
+            Assignments\Constant::compile($token, $last, $this->compiled)
         ) {
             return true;
         }
-        return false;
-    }
-
-    protected function compileShorthand(string $token, bool $last = false): bool
-    {
-        if (preg_match('/^:([a-zA-Z0-9_]+)$/', $token, $matches)) {
-
-            $this->compiled .= "'$matches[1]' => \$$matches[1]";
-
-            if ( ! $last) {
-                $this->compiled .= ', ';
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function compileVariable(string $token, bool $last = false): bool
-    {
-        if (preg_match('/^:([a-zA-Z0-9_]+)=(.+)$/', $token, $matches)) {
-
-            $context = Context::compile($matches[2]);
-
-            if ($context === '') {
-                trigger_error("Template syntax error. Invalide assignment: '$token'", E_USER_WARNING);
-                return false;
-            }
-
-            $this->compiled .= "'$matches[1]' => " . $context;
-
-            if ( ! $last) {
-                $this->compiled .= ', ';
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function compileString(string $token, bool $last = false): bool
-    {
-        if (preg_match('/^([a-zA-Z0-9_]+)="([^"]*)"$/', $token, $matches)) {
-
-            $this->compiled .= "'$matches[1]' => '" . addslashes($matches[2]) . "'";
-
-            if ( ! $last) {
-                $this->compiled .= ', ';
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function compileBoolAndNumb(string $token, bool $last = false): bool
-    {
-        if (preg_match('/^([a-zA-Z0-9_]+)=([0-9.]*|true|false)$/', $token, $matches)) {
-
-            $this->compiled .= "'$matches[1]' => $matches[2]";
-
-            if ( ! $last) {
-                $this->compiled .= ', ';
-            }
-
-            return true;
-        }
-
         return false;
     }
 

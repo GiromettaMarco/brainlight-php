@@ -60,43 +60,43 @@ class Core
 
         switch ($matches[1]) {
             case '':
-                $this->compiled .= Variable::print($matches[2]);
+                $this->compiled .= Tags\Escaped::compile($matches[2]);
                 break;
 
             case '!':
-                $this->compiled .= Variable::print($matches[2], false);
+                $this->compiled .= Tags\Unescaped::compile($matches[2]);
                 break;
 
             case '?':
-                $this->compiled .= Condition::open($matches[2]);
+                $this->compiled .= Tags\Condition::open($matches[2]);
                 break;
 
             case '/?':
-                $this->compiled .= Condition::close();
+                $this->compiled .= Tags\Condition::close();
                 break;
 
             case '#':
-                $this->compiled .= Loop::open($matches[2]);
+                $this->compiled .= Tags\Loop::open($matches[2]);
                 break;
 
             case '/#':
-                $this->compiled .= Loop::close();
+                $this->compiled .= Tags\Loop::close();
                 break;
 
             case '>':
-                $this->compiled .= Inclusion::partial($matches[2]);
+                $this->compiled .= Tags\Inclusion::compile($matches[2]);
                 break;
 
             case '&':
-                $this->extending = Inclusion::getExtension($matches[2]);
+                $this->extending = Tags\Inclusion::getExtension($matches[2]);
                 break;
 
             case '$':
-                $this->compiled .= Slot::open($matches[2]);
+                $this->compiled .= Tags\Slot::open($matches[2]);
                 break;
 
             case '/$':
-                $this->compiled .= Slot::close();
+                $this->compiled .= Tags\Slot::close();
                 break;
 
             default:

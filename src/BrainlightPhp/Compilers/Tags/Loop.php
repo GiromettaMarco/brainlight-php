@@ -1,8 +1,10 @@
 <?php
 
-namespace Brainlight\BrainlightPhp\Compilers;
+namespace Brainlight\BrainlightPhp\Compilers\Tags;
 
-class Loop
+use Brainlight\BrainlightPhp\Compilers\Context;
+
+class Loop extends BlockTag
 {
     protected static string $regex = '/^([a-zA-Z0-9_>\s]+?)(?:\s+@\s+([a-zA-Z0-9_]+)(?:\s*>\s*([a-zA-Z0-9_]+))?)?$/';
 
