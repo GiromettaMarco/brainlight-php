@@ -8,6 +8,8 @@ abstract class Logic
 
     protected array $mandatory = [];
 
+    protected array $mandatorySlots = [];
+
     public function __construct(string $template)
     {
         if (! isset($this->template)) {
@@ -21,7 +23,7 @@ abstract class Logic
     {
         foreach ($this->mandatory as $mandatory) {
             if (! isset($parameters[$mandatory])) {
-                throw new \InvalidArgumentException("Missing argument '$mandatory'");
+                $this->throwError("Missing argument '$mandatory'");
             }
         }
     }
@@ -31,6 +33,30 @@ abstract class Logic
         $this->checkParameters($parameters);
 
         return $this->getVariables($parameters);
+    }
+
+    public function checkSlots(array $slotNames): void
+    {
+        foreach ($this->mandatorySlots as $mandatory) {
+            if (! in_array($mandatory, $slotNames, true)) {
+                $this->throwError("Missing slot '$mandatory'");
+            }
+        }
+    }
+
+    protected function throwError(?string $message = null): void
+    {
+        $error = 'Runtime error.';
+
+        if (isset($this->template)) {
+            $error .= " Template: $this->template.";
+        }
+
+        if (isset($message)) {
+            $error .= " $message";
+        }
+
+        throw new \InvalidArgumentException($error);
     }
 }
 

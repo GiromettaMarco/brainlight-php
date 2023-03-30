@@ -105,6 +105,8 @@ class Engine
     {
         $logic = new ($this->resolveLogicNamespace($template))($template);
 
+        $logic->checkSlots($this->slots->getNames());
+
         return $this->includeExtension($logic->template, $logic->filterVariables($variables));
     }
 

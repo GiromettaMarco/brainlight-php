@@ -43,4 +43,17 @@ class SlotsMap
 
         return $collected;
     }
+
+    public function getNames(): array
+    {
+        $collected = [];
+
+        foreach($this->slots as $slot) {
+            if ($slot->hasLevel($this->level)) {
+                $collected[] = $slot->name;
+            }
+        }
+
+        return $collected;
+    }
 }
