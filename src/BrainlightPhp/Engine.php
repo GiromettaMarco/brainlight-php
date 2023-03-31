@@ -45,8 +45,15 @@ class Engine
      * @param array $variables Key paired array with values for substitutions
      * @return string The parsed template as a string
      */
-    public function render(string $template, array $variables = []): string
+    public function render(string $template, array $variables = [], bool $logic  = false): string
     {
+        if ($logic) {
+            $logic = new ($this->resolveLogicNamespace($template))($template);
+
+            $template = $logic->template;
+            $variables = $logic->filterVariables($variables);
+        }
+
         $templatePath = $this->resolveTemplateName($template);
 
         return $this->renderTemplate($templatePath, $variables);
@@ -57,10 +64,18 @@ class Engine
      *
      * @param string $template
      * @param array $variables
+     * @param bool $logic
      * @return string
      */
-    public function includePartial(string $template, array $variables = []): string
+    public function includePartial(string $template, array $variables = [], bool $logic = false): string
     {
+        if ($logic) {
+            $logic = new ($this->resolveLogicNamespace($template))($template);
+
+            $template = $logic->template;
+            $variables = $logic->filterVariables($variables);
+        }
+
         $templatePath = $this->resolveTemplateName($template, true);
 
         return $this->renderTemplate($templatePath, $variables);
@@ -71,43 +86,23 @@ class Engine
      *
      * @param string $template
      * @param array $variables
+     * @param bool $logic
      * @return string
      */
-    public function includeExtension(string $template, array $variables = []): string
+    public function includeExtension(string $template, array $variables = [], bool $logic = false): string
     {
+        if ($logic) {
+            $logic = new ($this->resolveLogicNamespace($template))($template);
+
+            $logic->checkSlots($this->slots->getNames());
+
+            $template = $logic->template;
+            $variables = $logic->filterVariables($variables);
+        }
+
         $templatePath = $this->resolveTemplateName($template, true);
 
         return $this->renderTemplate($templatePath, array_merge($variables, $this->slots->pop()));
-    }
-
-    /**
-     * Renders a partial template with additional logic.
-     *
-     * @param string $template
-     * @param array $variables
-     * @return string
-     */
-    public function includePartialWithLogic(string $template, array $variables = []): string
-    {
-        $logic = new ($this->resolveLogicNamespace($template))($template);
-
-        return $this->includePartial($logic->template, $logic->filterVariables($variables));
-    }
-
-    /**
-     * Renders a template extension with additional logic.
-     *
-     * @param string $template
-     * @param array $variables
-     * @return string
-     */
-    public function includeExtensionWithLogic(string $template, array $variables = []): string
-    {
-        $logic = new ($this->resolveLogicNamespace($template))($template);
-
-        $logic->checkSlots($this->slots->getNames());
-
-        return $this->includeExtension($logic->template, $logic->filterVariables($variables));
     }
 
     /**

@@ -15,15 +15,9 @@ class Inclusion extends SingleTag
 
             $data = (isset($matches[3])) ? Assignments::compile($matches[3]) : '[]';
 
-            $compiled = '<?php echo $__brain->';
+            $logic = ($matches[1] !== '') ? 'true': 'false';
 
-            if ($matches[1] !== '') {
-                $compiled .= 'includePartialWithLogic';
-            } else {
-                $compiled .= 'includePartial';
-            }
-
-            return $compiled .= '(\'' . $matches[2] . '\', ' . $data . '); ?>';
+            return '<?php echo $__brain->includePartial(\'' . $matches[2] . '\', ' . $data . ', ' . $logic . '); ?>';
         }
 
         trigger_error("Template syntax error; Tag: {{>}}; Statement: '$statement'", E_USER_WARNING);

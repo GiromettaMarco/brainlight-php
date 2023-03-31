@@ -17,14 +17,8 @@ class Extension
 
     public function compile(): string
     {
-        $code = '<?php echo $__brain->';
+        $logic = ($this->advanced) ? 'true' : 'false';
 
-        if ($this->advanced) {
-            $code .= 'includeExtensionWithLogic';
-        } else {
-            $code .= 'includeExtension';
-        }
-
-        return $code .= "('" . $this->template . "', " . $this->data . "); ?>";
+        return '<?php echo $__brain->includeExtension(\'' . $this->template . '\', ' . $this->data . ', ' . $logic . '); ?>';
     }
 }
