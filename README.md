@@ -7,12 +7,14 @@ This is a PHP implementation of the Brainlight paradigm.
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Additional logic](#additional-logic)
 - [Options](#options)
 - [License](#license)
 
 ## Requirements
 
 - PHP >= 8.1
+- Composer
 
 ## Installation
 
@@ -45,6 +47,99 @@ echo $engine->render('templateName', [
 
 Make reference to the [Brainlight documentation](https://github.com/GiromettaMarco/brainlight) for templates syntax.
 
+## Additional logic
+
+Brainlight PHP supports templates with additional logic by making use of the ```Brainlight\BrainlightPhp\Logic``` class and namespaces.
+
+First consider adding a namespace root in your engine configuration:
+
+```php
+use Brainlight\BrainlightPhp\Engine;
+
+$engine = new Engine([
+    'cacheDir' => __DIR__ . '/cache',
+    'templatesDir' => __DIR__,
+    'logicNamespace' => 'Logic',
+]);
+```
+
+Then create a new logic class by extending ```Brainlight\BrainlightPhp\Logic```:
+
+```php
+namespace Logic;
+
+use Brainlight\BrainlightPhp\Logic;
+
+class Button extends Logic
+{
+    // ...
+}
+```
+
+This way, while rendering ```{{ >+ button }}``` and ```{{ &+ button }}``` class ```Logic\Button``` will be loaded.
+
+In addition, the template name inside these tags will be converted to a namespace. So ```buttons.button-delete``` will become ```Buttons\ButtonDelete```.
+
+A Logic class must implement the ```getVariables()``` method:
+
+```php
+namespace Logic;
+
+use Brainlight\BrainlightPhp\Logic;
+
+class Button extends Logic
+{
+    protected function getVariables(array $parameters): array
+    {
+        return $parameters;
+    }
+}
+```
+
+The purpose of this function is to modify the arguments passed to the template. Such arguments are collected inside the ```parameters``` associative array.
+
+It is possible to set mandatory arguments using the ```mandatory``` array property and mandatory slots using the ```mandatorySlots``` array property:
+
+```php
+namespace Logic\Inclusions;
+
+use Brainlight\BrainlightPhp\Logic;
+
+class Page extends Logic
+{
+    protected array $mandatory = [
+        'title',
+    ];
+
+    protected array $mandatorySlots = [
+        'content',
+    ];
+
+    // ...
+}
+```
+
+It is also possible to change the default template associated with a logic class by setting its ```template``` property:
+
+```php
+namespace Logic;
+
+use Brainlight\BrainlightPhp\Logic;
+
+class Button extends Logic
+{
+    public ?string $template = 'buttons.custom-template';
+
+    // ...
+}
+```
+
+To render a template with additional logic directly from a PHP script, use the third parameter of the ```render()``` function:
+
+```php
+$engine->render('button', [], true);
+```
+
 ## Options
 
 The Engine constructor supports the following options:
@@ -55,7 +150,7 @@ Type: string
 
 Absolute path where cached templates will be stored.
 
-This field is mandatory. 
+This field is mandatory.
 
 ### templatesDir
 
@@ -91,6 +186,14 @@ If ```false``` is provided, the template engine will consider the template name 
 If ```null``` is provided, partial templates will be resolved according to the same rule set with ```'templatesDir'```.
 
 Default value: ```null```
+
+### logicNamespace
+
+Type: string|bool
+
+Namespace root used to resolve additional logic classes.
+
+Default value: ```false```
 
 ### extension
 
